@@ -11,6 +11,7 @@
 #include "FOCV_JsiObject.hpp"
 #include "opencv2/opencv.hpp"
 #include <opencv2/calib3d/calib3d.hpp>  
+#include <FOCV_FunctionArguments.hpp>
 
 using namespace mrousavy;
 
