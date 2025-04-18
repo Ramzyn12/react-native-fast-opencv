@@ -10,6 +10,7 @@
 #include "ConvertImage.hpp"
 #include "FOCV_JsiObject.hpp"
 #include "opencv2/opencv.hpp"
+#include <opencv2/calib3d/calib3d.hpp>  
 
 using namespace mrousavy;
 
@@ -222,6 +223,23 @@ jsi::Value OpenCVPlugin::get(jsi::Runtime& runtime, const jsi::PropNameID& propN
               size_t count) -> jsi::Object {
 
           return FOCV_Object::convertToJSI(runtime, arguments, count);
+      });
+    }
+    else if (propName == "findHomographyCustom") {
+      return jsi::Function::createFromHostFunction(
+        runtime, jsi::PropNameID::forAscii(runtime, "findHomographyCustom"), 2,
+        [=](jsi::Runtime& runtime, const jsi::Value& thisValue, const jsi::Value* arguments,
+            size_t count) -> jsi::Value {
+          
+          // Parse arguments
+          FOCV_FunctionArguments args(runtime, arguments, count);
+          auto src = args.asPoint2fVectorPtr(0);
+          auto dst = args.asPoint2fVectorPtr(1);
+    
+          cv::Mat H = cv::findHomography(*src, *dst, cv::RANSAC);
+    
+          auto id = FOCV_Storage::save(H);
+          return FOCV_JsiObject::wrap(runtime, "mat", id);
       });
     }
   else if (propName == "copyObjectFromVector") {
